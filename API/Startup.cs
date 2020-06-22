@@ -14,6 +14,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Core.Interfaces;
+using Infrastructure.Data;
+using AutoMapper;
+using API.Helpers;
 
 namespace API
 {
@@ -30,6 +34,8 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped(typeof(IGenericRepository<>),(typeof(GenericRepository<>)));
+            services.AddAutoMapper(typeof(MappingProfiles));
             services.AddDbContext<StoreContext>((options) =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
@@ -49,7 +55,11 @@ namespace API
 
             app.UseRouting();
 
+            app.UseStaticFiles();
+
             app.UseAuthorization();
+
+            
 
             app.UseEndpoints(endpoints =>
             {
